@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Masjid Al Ikhlas</title>
+
+    <!-- CSS KHUSUS HALAMAN ADMIN -->
+    <link rel="stylesheet" href="admin-style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="admin.js" defer></script>
+</head>
+
+<body>
+
+<main class="admin-container">
+
+    <!-- ================= LOGIN ================= -->
+    <section id="loginBox" class="login-card">
+
+        <div class="login-logo">🕌</div>
+
+        <h1>Admin Masjid</h1>
+
+        <p class="login-subtitle">
+            Kelola keuangan dan dokumentasi Masjid Al Ikhlas.
+        </p>
+
+        <form id="loginForm" class="login-form">
+
+            <div class="form-group">
+                <label for="email">Email Admin</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Masukkan email"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Masukkan password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                🔐 Login
+            </button>
+
+        </form>
+
+        <p id="loginMessage" class="message"></p>
+
+    </section>
+
+
+    <!-- ================= DASHBOARD ================= -->
+    <section id="adminPanel" class="dashboard" hidden>
+
+        <!-- HEADER -->
+        <header class="admin-header">
+
+            <div>
+                <span class="section-label">ADMINISTRATOR</span>
+                <h1>Dashboard Masjid</h1>
+                <p>Kelola keuangan dan dokumentasi dengan mudah.</p>
+            </div>
+
+            <button id="logoutBtn" class="btn btn-danger">
+                Keluar
+            </button>
+
+        </header>
+
+
+        <!-- ================= RINGKASAN ================= -->
+        <section class="stats">
+
+            <article class="stat-card saldo">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <span>Saldo</span>
+                    <strong id="adminSaldo">Rp 0</strong>
+                </div>
+            </article>
+
+            <article class="stat-card masuk">
+                <div class="stat-icon">📥</div>
+                <div class="stat-content">
+                    <span>Uang Masuk</span>
+                    <strong id="adminMasuk">Rp 0</strong>
+                </div>
+            </article>
+
+            <article class="stat-card keluar">
+                <div class="stat-icon">📤</div>
+                <div class="stat-content">
+                    <span>Uang Keluar</span>
+                    <strong id="adminKeluar">Rp 0</strong>
+                </div>
+            </article>
+
+        </section>
+
+
+        <!-- ================= TAMBAH TRANSAKSI ================= -->
+        <section class="admin-card">
+
+            <div class="card-heading">
+                <span class="section-label">KEUANGAN</span>
+                <h2>Tambah Transaksi</h2>
+                <p>Masukkan transaksi pemasukan atau pengeluaran.</p>
+            </div>
+
+            <form id="transactionForm" class="transaction-form">
+
+                <div class="form-group">
+                    <label for="tanggal">Tanggal</label>
+                    <input type="date" id="tanggal" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="keterangan">Keterangan</label>
+                    <input
+                        type="text"
+                        id="keterangan"
+                        placeholder="Contoh: Infaq Jumat"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="jenis">Jenis</label>
+                    <select id="jenis" required>
+                        <option value="masuk">Uang Masuk</option>
+                        <option value="keluar">Uang Keluar</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="nominal">Nominal</label>
+                    <input
+                        type="number"
+                        id="nominal"
+                        placeholder="Contoh: 100000"
+                        min="1"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    + Simpan Transaksi
+                </button>
+
+            </form>
+
+            <p id="formMessage" class="message success-message"></p>
+
+        </section>
+
+
+        <!-- ================= KELOLA TRANSAKSI ================= -->
+        <section class="admin-card">
+
+            <div class="card-heading">
+                <span class="section-label">DATA KEUANGAN</span>
+                <h2>Kelola Transaksi</h2>
+                <p>Edit atau hapus transaksi yang sudah tersimpan.</p>
+            </div>
+
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Keterangan</th>
+                            <th>Jenis</th>
+                            <th>Nominal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+
+        <!-- ================= TAMBAH DOKUMENTASI ================= -->
+        <section class="admin-card">
+
+            <div class="card-heading">
+                <span class="section-label">GALERI</span>
+                <h2>Dokumentasi Masjid</h2>
+                <p>Tambahkan foto kegiatan tanpa perlu mengunggahnya ke GitHub.</p>
+            </div>
+
+            <div class="upload-box">
+
+                <div class="form-group">
+                    <label for="judulDokumentasi">Judul Dokumentasi</label>
+                    <input
+                        type="text"
+                        id="judulDokumentasi"
+                        placeholder="Contoh: Kegiatan Masjid"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="gambarDokumentasi">Pilih Foto</label>
+                    <input
+                        type="file"
+                        id="gambarDokumentasi"
+                        accept="image/*"
+                    >
+                </div>
+
+                <button
+                    type="button"
+                    id="btnTambahDokumentasi"
+                    class="btn btn-primary btn-full-mobile">
+                    📷 Tambahkan Dokumentasi
+                </button>
+
+                <p id="statusDokumentasi" class="message"></p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= DAFTAR DOKUMENTASI ================= -->
+        <section class="admin-card">
+
+            <div class="card-heading">
+                <span class="section-label">GALERI</span>
+                <h2>Daftar Dokumentasi</h2>
+                <p>Foto yang sudah tersimpan di Supabase.</p>
+            </div>
+
+            <div id="daftarDokumentasiAdmin" class="documentation-list"></div>
+
+        </section>
+
+    </section>
+
+</main>
+
+</body>
+</html>

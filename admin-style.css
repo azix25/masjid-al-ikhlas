@@ -1,0 +1,546 @@
+/* =====================================================
+   ADMIN MASJID AL IKHLAS
+   CSS KHUSUS HALAMAN ADMIN
+   Tidak menggunakan style.css halaman utama
+   ===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f6f5;
+    color: #1f2937;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: .6;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+
+/* ================= CONTAINER ================= */
+
+.admin-container {
+    width: min(1100px, calc(100% - 32px));
+    margin: auto;
+    padding: 32px 0 50px;
+}
+
+
+/* ================= LOGIN ================= */
+
+.login-card {
+    width: min(430px, 100%);
+    margin: 7vh auto 0;
+    padding: 32px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .07);
+}
+
+.login-logo {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 16px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #ecfdf5;
+    font-size: 34px;
+}
+
+.login-card h1 {
+    margin: 0;
+    text-align: center;
+    font-size: 26px;
+}
+
+.login-subtitle {
+    margin: 10px 0 24px;
+    text-align: center;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.login-form {
+    display: grid;
+    gap: 14px;
+}
+
+
+/* ================= HEADER ================= */
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.admin-header h1 {
+    margin: 5px 0;
+    font-size: 30px;
+    color: #111827;
+}
+
+.admin-header p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.section-label {
+    display: inline-block;
+    color: #047857;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+
+
+/* ================= FORM ================= */
+
+.form-group {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+}
+
+.form-group label {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+input,
+select {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    outline: none;
+    background: #fff;
+    color: #111827;
+    transition: .2s;
+}
+
+input:focus,
+select:focus {
+    border-color: #059669;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, .12);
+}
+
+input[type="file"] {
+    padding: 8px;
+}
+
+
+/* ================= BUTTON ================= */
+
+.btn {
+    min-height: 46px;
+    padding: 10px 17px;
+    border: 0;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: .15s;
+}
+
+.btn:active {
+    transform: scale(.98);
+}
+
+.btn-primary {
+    background: #047857;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #065f46;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+
+/* ================= MESSAGE ================= */
+
+.message {
+    min-height: 20px;
+    margin: 12px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.success-message {
+    color: #047857;
+}
+
+
+/* ================= STAT ================= */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 15px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, .045);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-size: 21px;
+}
+
+.stat-card.saldo .stat-icon {
+    background: #eff6ff;
+}
+
+.stat-card.masuk .stat-icon {
+    background: #ecfdf5;
+}
+
+.stat-card.keluar .stat-icon {
+    background: #fef2f2;
+}
+
+.stat-card span {
+    display: block;
+    margin-bottom: 5px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.stat-card strong {
+    display: block;
+    font-size: 19px;
+    overflow-wrap: anywhere;
+}
+
+
+/* ================= CARD ================= */
+
+.admin-card {
+    margin-bottom: 18px;
+    padding: 23px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 15px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, .045);
+}
+
+.card-heading {
+    margin-bottom: 18px;
+}
+
+.card-heading h2 {
+    margin: 5px 0 4px;
+    color: #111827;
+    font-size: 21px;
+}
+
+.card-heading p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+
+/* ================= TRANSACTION ================= */
+
+.transaction-form {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr 1fr auto;
+    gap: 11px;
+    align-items: end;
+}
+
+
+/* ================= TABLE ================= */
+
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 13px 14px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    background: #f9fafb;
+    color: #374151;
+    font-size: 13px;
+}
+
+td {
+    color: #374151;
+    font-size: 14px;
+}
+
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+td button {
+    min-width: 38px;
+    min-height: 36px;
+    margin-right: 4px;
+    padding: 6px 9px;
+    border: 0;
+    border-radius: 8px;
+}
+
+.btn-edit {
+    background: #fef3c7;
+}
+
+
+/* ================= UPLOAD ================= */
+
+.upload-box {
+    padding: 18px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.upload-box .form-group {
+    margin-bottom: 14px;
+}
+
+
+/* ================= DOCUMENTATION ================= */
+
+.documentation-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.admin-dokumentasi {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.admin-dokumentasi img {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: #f3f4f6;
+}
+
+.admin-dokumentasi > div {
+    padding: 13px;
+}
+
+.admin-dokumentasi strong {
+    display: block;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.admin-dokumentasi button {
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+
+/* ================= TABLET ================= */
+
+@media (max-width: 950px) {
+
+    .transaction-form {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .transaction-form > button {
+        width: 100%;
+    }
+
+    .documentation-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* ================= HP ================= */
+
+@media (max-width: 650px) {
+
+    .admin-container {
+        width: calc(100% - 20px);
+        padding: 16px 0 30px;
+    }
+
+    .login-card {
+        margin-top: 3vh;
+        padding: 23px 18px;
+        border-radius: 15px;
+    }
+
+    .login-card h1 {
+        font-size: 23px;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 13px;
+        margin-bottom: 16px;
+    }
+
+    .admin-header h1 {
+        font-size: 25px;
+    }
+
+    .admin-header .btn {
+        width: 100%;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .stat-card {
+        padding: 14px;
+    }
+
+    .stat-card strong {
+        font-size: 18px;
+    }
+
+    .admin-card {
+        padding: 17px 14px;
+        margin-bottom: 13px;
+        border-radius: 13px;
+    }
+
+    .card-heading {
+        margin-bottom: 15px;
+    }
+
+    .card-heading h2 {
+        font-size: 19px;
+    }
+
+    .transaction-form {
+        grid-template-columns: 1fr;
+        gap: 11px;
+    }
+
+    .transaction-form > button {
+        width: 100%;
+    }
+
+    .btn-full-mobile {
+        width: 100%;
+    }
+
+    .documentation-list {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-dokumentasi img {
+        height: 210px;
+    }
+
+    .upload-box {
+        padding: 14px;
+    }
+}
+
+
+/* ================= HP KECIL ================= */
+
+@media (max-width: 380px) {
+
+    .admin-container {
+        width: calc(100% - 14px);
+    }
+
+    .login-card {
+        padding: 20px 14px;
+    }
+
+    .admin-card {
+        padding: 14px 11px;
+    }
+
+    .stat-card {
+        padding: 12px;
+    }
+}
