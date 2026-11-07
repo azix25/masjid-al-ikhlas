@@ -472,10 +472,11 @@ async function loadDokumentasi() {
     const { data, error } =
         await supabaseClient
             .from("dokumentasi")
-            .select("*")
+            .select("id, judul, gambar_url, created_at")
             .order("created_at", {
                 ascending: false
-            });
+            })
+            .limit(2);
 
 
     if (error) {
