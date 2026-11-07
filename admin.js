@@ -901,59 +901,70 @@ async function tampilkanDokumentasiAdmin() {
 async function hapusDokumentasi(id, url) {
 
     if (!confirm(
-        "Hapus dokumentasi ini?"
+        "Yakin ingin menghapus dokumentasi beserta file gambarnya dari penyimpanan?"
     )) {
-
         return;
     }
 
-
     try {
+        // Verifikasi ulang akun ke server Auth dan pastikan role admin.
+        const user = await dapatkanAdminTerverifikasi();
 
-        // Ambil nama file dari URL
-        const namaFile =
-            decodeURIComponent(
-                url.split("/").pop()
-            );
+        if (!user) {
+            await supabaseClient.auth.signOut();
+            throw new Error("Sesi admin tidak valid. Silakan login kembali.");
+        }
 
+        // Ambil path file dari URL Storage, termasuk jika kelak memakai folder.
+        const parsedUrl = new URL(url);
+        const marker = "/storage/v1/object/public/dokumentasi/";
+        const markerIndex = parsedUrl.pathname.indexOf(marker);
 
-        // Hapus file Storage
-        const storage =
-            await supabaseClient.storage
-                .from("dokumentasi")
-                .remove([namaFile]);
+        if (markerIndex === -1) {
+            throw new Error("URL gambar bukan berasal dari bucket dokumentasi. Data tidak dihapus.");
+        }
 
+        const encodedPath = parsedUrl.pathname.slice(markerIndex + marker.length);
+        const filePath = encodedPath
+            .split("/")
+            .map(segment => decodeURIComponent(segment))
+            .join("/");
+
+        if (!filePath || filePath.includes("..")) {
+            throw new Error("Lokasi file tidak valid. Data tidak dihapus.");
+        }
+
+        // Hapus file fisik terlebih dahulu. Jika gagal, jangan hapus baris database.
+        const storage = await supabaseClient.storage
+            .from("dokumentasi")
+            .remove([filePath]);
 
         if (storage.error) {
-            console.warn(storage.error);
+            throw new Error("File gagal dihapus dari Supabase Storage: " + storage.error.message);
         }
 
-
-        // Hapus data database
-        const result =
-            await supabaseClient
-                .from("dokumentasi")
-                .delete()
-                .eq("id", id);
-
+        // Setelah file Storage berhasil dihapus, hapus referensinya dari database.
+        const result = await supabaseClient
+            .from("dokumentasi")
+            .delete()
+            .eq("id", id)
+            .select("id");
 
         if (result.error) {
-            throw result.error;
+            throw new Error("File gambar sudah terhapus, tetapi data database gagal dihapus: " + result.error.message);
         }
 
+        if (!result.data || result.data.length === 0) {
+            throw new Error("File gambar sudah terhapus, tetapi baris dokumentasi tidak ditemukan atau tidak dapat dihapus.");
+        }
 
-        tampilkanDokumentasiAdmin();
-
+        alert("Dokumentasi dan file gambar berhasil dihapus dari Supabase.");
+        await tampilkanDokumentasiAdmin();
 
     } catch (error) {
-
-        alert(
-            "Gagal menghapus: " +
-            error.message
-        );
-
+        console.error("Hapus dokumentasi gagal:", error);
+        alert("Gagal menghapus dokumentasi: " + error.message);
     }
-
 }
 
 
