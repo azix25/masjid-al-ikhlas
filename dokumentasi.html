@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Galeri dokumentasi kegiatan Masjid Al Ikhlas Taman Palet.">
+    <meta name="theme-color" content="#064e3b">
+    <title>Dokumentasi - Masjid Al Ikhlas</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+
+    <style>
+        .documentation-hero {
+            padding: 55px 20px;
+            color: #fff;
+            text-align: center;
+            background: linear-gradient(135deg, #064e3b, #059669);
+        }
+        .documentation-hero h1 { margin: 0 0 10px; font-size: clamp(28px, 5vw, 42px); }
+        .documentation-hero p { margin: 0; color: rgba(255,255,255,.86); }
+        .documentation-actions { margin-top: 20px; }
+        .documentation-actions a {
+            display: inline-block; padding: 10px 16px; border-radius: 10px;
+            color: #064e3b; background: #fff; text-decoration: none; font-weight: 700;
+        }
+        .documentation-main { min-height: 55vh; }
+        .documentation-status {
+            padding: 35px 16px; text-align: center; color: #64748b;
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px;
+        }
+        .documentation-grid {
+            display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px;
+        }
+        .documentation-card {
+            overflow: hidden; border: 1px solid #e2e8f0; border-radius: 16px;
+            background: #fff; box-shadow: 0 5px 18px rgba(15,23,42,.06);
+        }
+        .documentation-image-button {
+            display: block; width: 100%; padding: 0; border: 0; background: #f1f5f9;
+            cursor: zoom-in;
+        }
+        .documentation-image-button img {
+            display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+        }
+        .documentation-caption { padding: 14px; }
+        .documentation-caption h2 { margin: 0 0 6px; color: #064e3b; font-size: 16px; }
+        .documentation-caption time { color: #64748b; font-size: 12px; }
+        .lightbox {
+            position: fixed; inset: 0; z-index: 2000; display: none; align-items: center;
+            justify-content: center; padding: 20px; background: rgba(0,0,0,.88);
+        }
+        .lightbox.open { display: flex; }
+        .lightbox img { max-width: min(100%, 1100px); max-height: 85vh; object-fit: contain; }
+        .lightbox-close {
+            position: absolute; top: 16px; right: 18px; width: 44px; height: 44px;
+            border: 0; border-radius: 50%; color: #111827; background: #fff;
+            font-size: 27px; cursor: pointer;
+        }
+        @media (max-width: 800px) {
+            .documentation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        }
+        @media (max-width: 520px) {
+            .documentation-grid { grid-template-columns: 1fr; }
+            .documentation-hero { padding: 42px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="brand">
+                <img src="images/logo-masjid.png" alt="Logo Masjid"
+                     onerror="this.style.display='none'">
+                <div>
+                    <strong>Masjid Al Ikhlas</strong>
+                    <small>Taman Palet</small>
+                </div>
+            </a>
+            <nav class="nav-menu" aria-label="Navigasi utama">
+                <a href="index.html">Beranda</a>
+                <a href="index.html#jadwal">Jadwal Sholat</a>
+                <a href="dokumentasi.html" aria-current="page">Dokumentasi</a>
+            </nav>
+            <button class="menu-toggle" id="menuToggle" type="button"
+                    aria-label="Buka menu" aria-expanded="false">☰</button>
+        </div>
+    </header>
+
+    <section class="documentation-hero">
+        <h1>📷 Dokumentasi Kegiatan</h1>
+        <p>Galeri kegiatan Masjid Al Ikhlas Taman Palet</p>
+        <div class="documentation-actions">
+            <a href="index.html">← Kembali ke Beranda</a>
+        </div>
+    </section>
+
+    <main class="section documentation-main">
+        <div class="container">
+            <div class="section-title">
+                <span>🕌</span>
+                <div>
+                    <h2>Galeri Masjid</h2>
+                    <p>Foto yang diunggah oleh admin akan tampil otomatis di halaman ini.</p>
+                </div>
+            </div>
+            <div id="documentationStatus" class="documentation-status" role="status">
+                Memuat dokumentasi...
+            </div>
+            <div id="documentationGrid" class="documentation-grid" aria-live="polite"></div>
+        </div>
+    </main>
+
+    <div id="lightbox" class="lightbox" role="dialog"
+         aria-modal="true" aria-label="Pratinjau foto">
+        <button id="lightboxClose" class="lightbox-close" type="button"
+                aria-label="Tutup pratinjau">×</button>
+        <img id="lightboxImage" alt="Foto dokumentasi ukuran besar">
+    </div>
+
+    <footer>
+        <div class="container">
+            <strong>Masjid Al Ikhlas</strong>
+            <p>Taman Palet</p>
+            <p>© <span id="year"></span> Masjid Al Ikhlas.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const grid = document.getElementById("documentationGrid");
+        const status = document.getElementById("documentationStatus");
+        const lightbox = document.getElementById("lightbox");
+        const lightboxImage = document.getElementById("lightboxImage");
+        const closeButton = document.getElementById("lightboxClose");
+
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        const menuToggle = document.getElementById("menuToggle");
+        const menu = document.querySelector(".nav-menu");
+        menuToggle.addEventListener("click", () => {
+            const isOpen = menu.classList.toggle("active");
+            menuToggle.setAttribute("aria-expanded", String(isOpen));
+        });
+
+        function closeLightbox() {
+            lightbox.classList.remove("open");
+            lightboxImage.removeAttribute("src");
+        }
+
+        closeButton.addEventListener("click", closeLightbox);
+        lightbox.addEventListener("click", event => {
+            if (event.target === lightbox) closeLightbox();
+        });
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") closeLightbox();
+        });
+
+        function openLightbox(src, title) {
+            lightboxImage.src = src;
+            lightboxImage.alt = title || "Dokumentasi Masjid";
+            lightbox.classList.add("open");
+            closeButton.focus();
+        }
+
+        function formatDate(value) {
+            if (!value) return "";
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return "";
+            return new Intl.DateTimeFormat("id-ID", {
+                day: "numeric", month: "long", year: "numeric"
+            }).format(date);
+        }
+
+        async function loadDocumentation() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from("dokumentasi")
+                    .select("id, judul, gambar_url, created_at")
+                    .order("created_at", { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    status.textContent = "Belum ada dokumentasi yang diunggah.";
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+
+                data.forEach(item => {
+                    if (!item.gambar_url) return;
+
+                    const card = document.createElement("article");
+                    card.className = "documentation-card";
+
+                    const imageButton = document.createElement("button");
+                    imageButton.type = "button";
+                    imageButton.className = "documentation-image-button";
+                    imageButton.setAttribute("aria-label", "Perbesar foto " + (item.judul || "Dokumentasi"));
+
+                    const image = document.createElement("img");
+                    image.src = item.gambar_url;
+                    image.alt = item.judul || "Dokumentasi Masjid";
+                    image.loading = "lazy";
+                    image.decoding = "async";
+                    image.addEventListener("error", () => {
+                        imageButton.disabled = true;
+                        image.alt = "Foto tidak dapat dimuat";
+                    });
+                    imageButton.appendChild(image);
+                    imageButton.addEventListener("click", () => openLightbox(item.gambar_url, item.judul));
+
+                    const caption = document.createElement("div");
+                    caption.className = "documentation-caption";
+
+                    const title = document.createElement("h2");
+                    title.textContent = item.judul || "Dokumentasi";
+                    caption.appendChild(title);
+
+                    const dateText = formatDate(item.created_at);
+                    if (dateText) {
+                        const time = document.createElement("time");
+                        time.dateTime = item.created_at;
+                        time.textContent = dateText;
+                        caption.appendChild(time);
+                    }
+
+                    card.append(imageButton, caption);
+                    fragment.appendChild(card);
+                });
+
+                if (!fragment.childElementCount) {
+                    status.textContent = "Belum ada foto dokumentasi yang dapat ditampilkan.";
+                    return;
+                }
+
+                grid.appendChild(fragment);
+                status.hidden = true;
+            } catch (error) {
+                console.error("Gagal memuat dokumentasi:", error);
+                status.textContent = "Dokumentasi gagal dimuat. Periksa koneksi internet atau izin akses data.";
+            }
+        }
+
+        loadDocumentation();
+    });
+    </script>
+</body>
+</html>
