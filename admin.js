@@ -151,26 +151,50 @@ function mulaiHitungMundur() {
 // CEK LOGIN SUPABASE
 // =========================
 
-async function cekLogin() {
+async function dapatkanAdminTerverifikasi() {
+    // getUser() memvalidasi token ke server Auth, bukan hanya membaca
+    // data sesi lokal dari browser.
+    const { data, error } = await supabaseClient.auth.getUser();
 
-    const {
-        data: { session }
-    } = await supabaseClient.auth.getSession();
-
-    if (session) {
-
-        document.getElementById("loginBox").hidden = true;
-
-        document.getElementById("adminPanel").hidden = false;
-
-        loadTransactions();
-
-        tampilkanDokumentasiAdmin();
-
-    } else {
-
-        cekKunciLogin();
+    if (error || !data.user) {
+        return null;
     }
+
+    // Role harus berasal dari app_metadata yang dikelola server,
+    // bukan user_metadata yang dapat diubah oleh pengguna.
+    if (data.user.app_metadata?.role !== "admin") {
+        return null;
+    }
+
+    return data.user;
+}
+
+async function cekLogin() {
+    const loginBox = document.getElementById("loginBox");
+    const adminPanel = document.getElementById("adminPanel");
+
+    // Pastikan dashboard tetap tertutup selama pemeriksaan.
+    adminPanel.hidden = true;
+    loginBox.hidden = false;
+
+    const user = await dapatkanAdminTerverifikasi();
+
+    if (user) {
+        loginBox.hidden = true;
+        adminPanel.hidden = false;
+        await loadTransactions();
+        await tampilkanDokumentasiAdmin();
+        return;
+    }
+
+    // Sesi non-admin tidak boleh dipakai untuk membuka dashboard.
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+        await supabaseClient.auth.signOut();
+        loginMessage.textContent = "⛔ Akun ini tidak memiliki hak akses admin.";
+    }
+
+    cekKunciLogin();
 }
 
 
@@ -247,7 +271,20 @@ loginForm.addEventListener("submit", async function(e) {
 
 
     // =========================
-    // LOGIN BERHASIL
+    // VERIFIKASI HAK AKSES ADMIN
+    // =========================
+
+    const user = await dapatkanAdminTerverifikasi();
+
+    if (!user) {
+        await supabaseClient.auth.signOut();
+        loginMessage.textContent =
+            "⛔ Login ditolak. Akun ini bukan admin yang diizinkan.";
+        return;
+    }
+
+    // =========================
+    // LOGIN ADMIN BERHASIL
     // =========================
 
     jumlahSalah = 0;
@@ -259,12 +296,10 @@ loginForm.addEventListener("submit", async function(e) {
     loginMessage.textContent = "";
 
     document.getElementById("loginBox").hidden = true;
-
     document.getElementById("adminPanel").hidden = false;
 
-    loadTransactions();
-
-    tampilkanDokumentasiAdmin();
+    await loadTransactions();
+    await tampilkanDokumentasiAdmin();
 
 });
 
